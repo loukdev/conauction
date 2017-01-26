@@ -1,6 +1,6 @@
-[EN]
+# [EN]
 
-# conauction
+## conauction
 This is a Licence Informatics 3rd year project developped in C language, using POSIX sockets.
 The program simulates auctions, devided into two parts :
 - The auctionneer : there is only one. He commands the conauction server.
@@ -10,13 +10,13 @@ Because it uses network sockets, the auctionner and the outbidders can be - and 
 
 For more details, look at http://lab-sticc.univ-brest.fr/~leparc/Etud/Licence/Reseau/Serie2UDP/TP_UDP.pdf (in french).
 
-# What is that name ?
+## What is that name ?
 This program simulates auction in console, this is not a GUI, and uses network with POSIX sockets.
 conauction is a contraction of two words : console and auction. By the way, it does a pun with "connection".
 
-[FR]
+# [FR]
 
-# conauction
+## conauction
 Ceci est un projet de 3e année de Licence Informatique développé en C, utilisant les sockets POSIX (chaussettes, en français ?).
 Le programme simule une vente aux enchères, il est divisé en deux parties :
 - Le commissaire-priseur : il y en a un seul. Il commande la version serveur de conauction.
@@ -26,6 +26,6 @@ Du fait que le programme utilise les sockets réseaux, le commissaire-priseur et
 
 Pour plus de détails, allez jeter un oeil ici : http://lab-sticc.univ-brest.fr/~leparc/Etud/Licence/Reseau/Serie2UDP/TP_UDP.pdf (en français).
 
-# Quel est ce nom ?
+## Quel est ce nom ?
 Ce programme simule une vente aux enchères (en anglais : auction) sur console (en anglais : ...console), il n'y pas d'interface graphique fenêtrée.
 Le nom est une contraction des deux mots "auction" et "console". Ce qui fait un jeu de mot avec "connection" (avec une petite pirouette de prononciation) - connexion en français.
