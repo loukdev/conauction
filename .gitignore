@@ -1,3 +1,6 @@
+# Specific files
+pouet.c
+
 # Object files
 *.o
 *.ko
