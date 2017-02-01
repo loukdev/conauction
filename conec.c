@@ -77,20 +77,19 @@ int conec_accept(conec_t * conec, conec_t * accepted)
 	return 0;
 }
 
-int conec_udp_accept(conec_t * conec, conec_t * accepted)
+int conec_udp_accept(conec_t * conec, struct sockaddr_in * addr)
 {
-	if(!conec || !accepted)
+	if(!conec || !addr)
 		PWEXIT("[conec_udp_accept] : A parameter is null.");
 
 	// Préparation de l'adresse :
-	accepted->addr.sin_family = AF_INET;
-	accepted->addr_size = sizeof(accepted->addr);
+	addr->sin_family = AF_INET;
+	socklen_t size = sizeof(*addr);
 
-	prot_t code;
+	pcode_t code;
 
 	// Réception du code d'opération :
-	if(recvfrom(conec->sock, (void *) &code, sizeof(code), 0,
-	   (struct sockaddr *) & accepted->addr, & accepted->addr_size) == -1)
+	if(recvfrom(conec->sock, (void *) &code, sizeof(code), 0, (struct sockaddr *) addr, &size) == -1)
 		PREXIT("[conec_udp_accept] recvfrom ");
 
 	// Si ce n'est pas une requête de connexion :
@@ -103,8 +102,7 @@ int conec_udp_accept(conec_t * conec, conec_t * accepted)
 		code = PROT_REQ_OK;
 
 	// Envoi de la réponse :
-	int r = sendto(conec->sock, (void *) &code, sizeof(code), 0,
-	   (struct sockaddr *) & accepted->addr, accepted->addr_size);
+	int r = sendto(conec->sock, (void *) &code, sizeof(code), 0, (const struct sockaddr *) addr, size);
 
 	// Si la réponse n'a pas été entièrement envoyée :
 	if(r != sizeof(code))

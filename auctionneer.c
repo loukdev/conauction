@@ -1,4 +1,5 @@
 #include "conec.h"
+#include "cltlist.h"
 
 #include <ctype.h>
 #include <signal.h>
@@ -30,8 +31,8 @@ int main(int argc, char * argv[])
 		PREXIT("[main] sigaction ");
 
 	conec_t con_home, con_auction;
-/*	cltlist_t clients;
-*/
+	cltlist_t clients;
+
 	printf("Initialistaion des connexions... "); fflush(stdout);
 
 	// Création des sockets d'acceuil et de service :
@@ -48,11 +49,19 @@ int main(int argc, char * argv[])
 		return -1;
 
 	printf("OK.\n");
-/*
+
+	// Demande de la description et du prix au commissaire :
+	char biddescr[] = "Crayon cure-dent";
+	float bidprice = 1.0;
+
 	// Création de la liste pour 32 clients :
 	if(cltlist_init(&clients, NCLI) == -1)
 		return -1;
-*/
+
+	if(step == STEP_ACCEPT)
+		printf("Etape : accueil des clients.\n");
+
+	char said = 0;
 	// Acceuil des clients :
 	while(step != STEP_EXIT)
 	{
@@ -60,17 +69,24 @@ int main(int argc, char * argv[])
 		{
 			case STEP_ACCEPT:
 			{
-				printf("Etape : acceuil des clients.\n");
-
-				conec_t temp;
-				if(conec_udp_accept(&con_home, &temp) == -1)
+				struct sockaddr_in clt_addr;
+				if(conec_udp_accept(&con_home, &clt_addr) == -1)
 					{step = STEP_EXIT; break;}
 
 				printf("Un client a été accepté.\n");
 
 				// Ajout du client dans la liste :
+				if(cltlist_add(&clients, &clt_addr) == -1)
+					{step = STEP_EXIT; break;}
 
-				// Envoi de l'addresse de la socket de service :
+				if(cltlist_is_full(&clients))
+				{
+					printf("Salle pleine.\n");
+					fflush(stdout);
+					step = STEP_START;
+
+					break;
+				}
 
 				// On demande au commissaire s'il veut continuer :
 				char b = ask_continue();
@@ -81,15 +97,24 @@ int main(int argc, char * argv[])
 			} break;
 			case STEP_START:
 			{
-				// Envoi de la description à tout le monde :
+				printf("Etape : démarrage de l'enchère.\n");
 
-				// Envoi du prix de départ :
+				// Fermeture de la connexion d'accueil :
+				conec_close(&con_home);
 
-				step = STEP_AUCTION;
+				// Envoi de la description et du prix de départ à tout le monde :
+				if(cltlist_sendtoall(con_auction.sock, biddescr, &clients, clt_sendstrto) == -1)
+					step = STEP_EXIT;
+				else if(cltlist_sendtoall(con_auction.sock, (puint_t *) &bidprice, &clients, clt_sendu32to) == -1)
+					step = STEP_EXIT;
+				else
+					step = STEP_AUCTION;
 			} break;
 			case STEP_AUCTION:
 			{
-				printf("Etape : enchères.\n");
+				if(!said)
+					{printf("Etape : enchères.\n"); said = 1;}
+
 				// Réception d'une offre :
 
 				// Calcul de la meilleure offre et affichage :
@@ -108,10 +133,13 @@ int main(int argc, char * argv[])
 		}
 	}
 
-	printf("Fermeture des connexions...\n");
+	printf("Fermeture des connexions... "); fflush(stdout);
 
+	cltlist_free(&clients);
 	conec_close(&con_home);
 	conec_close(&con_auction);
+
+	printf(" Au revoir.\n");
 
 	return 0;
 }

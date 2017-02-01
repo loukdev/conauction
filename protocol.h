@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-typedef uint16_t prot_t;
+typedef uint16_t pcode_t;
+typedef uint32_t puint_t;
 
 #define PROT_ERR	0b0000000100000000
 #define	PROT_REQ	0b0000001000000000
