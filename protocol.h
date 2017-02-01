@@ -1,0 +1,21 @@
+#ifndef PROTOCOL_H
+#  define PROTOCOL_H
+
+#include <stdint.h>
+
+typedef uint16_t prot_t;
+
+#define PROT_ERR	0b0000000100000000
+#define	PROT_REQ	0b0000001000000000
+#define	PROT_ANS	0b0000010000000000
+
+#define PROT_OK		0b0000000000000001
+#define PROT_CON	0b0000000000000010
+#define PROT_UNXVAL	0b0000000000000100	// UNeXpected VALue
+
+#define PROT_ERR_UNXVAL	(PROT_ERR | PROT_UNXVAL)
+#define	PROT_REQ_CON	(PROT_REQ | PROT_CON)
+#define PROT_REQ_OK		(PROT_REQ | PROT_OK)
+#define PROT_ANS_OK		(PROT_ANS | PROT_OK)
+
+#endif
