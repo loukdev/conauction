@@ -4,13 +4,6 @@
 #include "err.h"
 #include "protocol.h"
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
 typedef struct {
 	struct sockaddr_in addr;
 	socklen_t addr_size;

@@ -96,7 +96,7 @@ int conec_udp_accept(conec_t * conec, struct sockaddr_in * addr)
 	if(code != PROT_REQ_CON)
 	{
 		fprintf(stderr, "Warning ! [conec_udp_accept] : Unexpected protocol value.\n");
-		code = PROT_ERR_UNXVAL;
+		code = PROT_ERR_UNVA;
 	}	// Si c'est une requête de connexion :
 	else
 		code = PROT_REQ_OK;

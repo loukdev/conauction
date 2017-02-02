@@ -99,13 +99,10 @@ int main(int argc, char * argv[])
 			{
 				printf("Etape : démarrage de l'enchère.\n");
 
-				// Fermeture de la connexion d'accueil :
-				conec_close(&con_home);
-
 				// Envoi de la description et du prix de départ à tout le monde :
-				if(cltlist_sendtoall(con_auction.sock, biddescr, &clients, clt_sendstrto) == -1)
+				if(cltlist_sendtoall(con_auction.sock, (void *) biddescr, &clients, prot_send_str) == -1)
 					step = STEP_EXIT;
-				else if(cltlist_sendtoall(con_auction.sock, (puint_t *) &bidprice, &clients, clt_sendu32to) == -1)
+				else if(cltlist_sendtoall(con_auction.sock, (void *) &bidprice, &clients, prot_send_flt) == -1)
 					step = STEP_EXIT;
 				else
 					step = STEP_AUCTION;
@@ -116,7 +113,19 @@ int main(int argc, char * argv[])
 					{printf("Etape : enchères.\n"); said = 1;}
 
 				// Réception d'une offre :
+/*
+				pcode_t code;
+				struct sockaddr_in addr; socklen_t sz;
+				if(recvfrom(con_home.sock, (void *) &code, sizeof(code), 0, (sa_t *) &addr, &sz) == -1)
+					PREXIT("recvfrom ");
 
+				if(code == PROT_REQ_CON)
+				{
+					code = PROT_REQ_RFS;
+					if(sendto(con_home.sock, (void *), &code, sizeof(code, 0, (sa_t *) &addr, sz) == -1)
+						PREXIT("sendto ");
+				}
+*/
 				// Calcul de la meilleure offre et affichage :
 
 				// On demande au commissaire s'il faut continuer :

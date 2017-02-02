@@ -17,7 +17,7 @@ int main(int argc, char * argv[])
 	if(!(host = gethostbyname(argv[1])))
 		{herror("gethostbyname "); return -1;}
 
-	struct sockaddr_in * addr = & con_auct.addr;
+	sin_t * addr = & con_auct.addr;
 	addr->sin_port = htons(atoi(argv[2]));
 	memcpy(& addr->sin_addr, host->h_addr, host->h_length);
 
@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
 	prot_t code = PROT_REQ_CON;
 
 	if(sendto(con_auct.sock, (void *) &code, sizeof(code), 0,
-		(struct sockaddr *) & con_auct.addr, con_auct.addr_size) != sizeof(code))
+		(sin_t *) & con_auct.addr, con_auct.addr_size) != sizeof(code))
 		PREXIT("sendto ");
 
 	printf("OK.\n"
@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
 
 	conec_t temp;
 	if(recvfrom(con_auct.sock, (void *) &code, sizeof(code), 0,
-		(struct sockaddr *) & temp.addr, & temp.addr_size) == -1)
+		(sin_t *) & temp.addr, & temp.addr_size) == -1)
 		PREXIT("recvfrom ");
 
 	if(code != PROT_REQ_OK)
