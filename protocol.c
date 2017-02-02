@@ -15,39 +15,39 @@ char * strbin(unsigned long int i)
 int prot_send_str(int sock, const void * data, const sin_t * addr)
 {
 	if(!data || !addr)
-		PWEXIT("[pbid_send_str] : Null parameter.");
+		PWEXIT("[prot_send_str] : Null parameter.");
 
 	char * str = (char *) data;
-	const size_t ssz = strlen(str);
-	socklen_t addr_sz = sizeof(*addr);
+	pint_t ssz = strlen(str) + 1;
+	socklen_t adsz = sizeof(*addr);
 
-	int r = sendto(sock, &ssz, sizeof(ssz), 0, (const sa_t *) addr, addr_sz);
-	if(r != ssz)
+	int r = sendto(sock, &ssz, sizeof(ssz), 0, (const sa_t *) addr, adsz);
+	if(r != sizeof(ssz))
 	{
-		if(r < 0)
-			PREXIT("[pbid_send_str] sendto (string size) ");
+		if(r == -1)
+			PREXIT("[prot_send_str] sendto (string size) ");
 		else
-			PWEXIT("[pbid_send_str] sendto : String size not fully sent.");
+			PWEXIT("[prot_send_str] sendto : String size not fully sent.");
 	}
 
-	r = sendto(sock, str, ssz, 0, (const sa_t *) addr, addr_sz); 
+	r = sendto(sock, str, ssz, 0, (const sa_t *) addr, adsz); 
 	if(r != ssz)
 	{
-		if(r < 0)
-			PREXIT("[pbid_send_str] sendto (string) ");
+		if(r == -1)
+			PREXIT("[prot_send_str] sendto (string) ");
 		else
-			PWEXIT("[pbid_send_str] sendto : String not fully sent.");
+			PWEXIT("[prot_send_str] sendto : String not fully sent.");
 	}
 
-	pcode_t code;
-	if(read(sock, (void *) &code, sizeof(code)) == -1)
-		PREXIT("[pbid_send_str] read ");
+	pcode_t code; sin_t temp;
+	if(recvfrom(sock, (void *) &code, sizeof(code), 0, (sa_t *) &temp, &adsz) == -1)
+		PREXIT("[prot_send_str] read ");
 
 	if(code != PROT_ANS_OK)
 	{
 		if(code & PROT_ERR)
-			PWEXIT("[pbid_send_str] : Error from client.");
-		PWEXIT("[pbid_send_str] : Unexpected protocal value.");
+			PWEXIT("[prot_send_str] : Error from client.");
+		PWEXIT("[prot_send_str] : Unexpected protocal value.");
 	}
 
 	return 0;
@@ -59,7 +59,7 @@ int prot_send_flt(int sock, const void * data, const sin_t * addr)
 		PWEXIT("[prot_send_str] : Null parameter.");
 
 	float * flt = (float *) data;
-	size_t fsz = sizeof(*flt);
+	pint_t fsz = sizeof(*flt);
 	socklen_t adsz = sizeof(*addr);
 
 	int r = sendto(sock, (void *) flt, fsz, 0, (const sa_t *) addr, adsz); 
@@ -91,7 +91,7 @@ int prot_recv_str(int sock, char ** data, sin_t * addr)
 	if(!data || !addr)
 		PWEXIT("[prot_recv_str] : Null parameter.");
 
-	size_t ssz;
+	pint_t ssz;
 	socklen_t adsz = sizeof(*addr);
 
 	int r = recvfrom(sock, (void *) &ssz, sizeof(ssz), 0, (sa_t *) addr, &adsz);
@@ -107,12 +107,12 @@ int prot_recv_str(int sock, char ** data, sin_t * addr)
 		PREXIT("[prot_recv_str) recvfrom (string) ");
 
 	pcode_t code = PROT_ANS_OK;
-	ssz = sizeof(code);
+	int sz = sizeof(code);
 
 	*data = str;
 
-	r = sendto(sock, (void *) &code, ssz, 0, (sa_t *) addr, adsz);
-	if(r != ssz)
+	r = sendto(sock, (void *) &code, sz, 0, (sa_t *) addr, adsz);
+	if(r != sz)
 	{
 		if(r == -1)
 			PREXIT("[prot_recv_str] sendto (OK) ");
@@ -128,7 +128,7 @@ int prot_recv_flt(int sock, float * data, sin_t * addr)
 	if(!data || !addr)
 		PWEXIT("[prot_recv_flt] : Null parameter.");
 
-	size_t fsz = sizeof(*data);
+	pint_t fsz = sizeof(*data);
 	socklen_t adsz = sizeof(*addr);
 
 	int r = recvfrom(sock, (void *) data, fsz, 0, (sa_t *) addr, &adsz);

@@ -16,26 +16,39 @@ int main(int argc, char * argv[])
 	printf("Ok\nEnvoi de la requête de connexion... "); fflush(stdout);
 
 	if(conec_udp_connect(&con_auct) == -1)
+	{
+		conec_close(&con_auct);
+		printf("Echec de la connexion. Au revoir.\n");
+
 		return -1;
+	}
 
-/*
-	pcode_t code = PROT_REQ_CON;
+	printf("Ok\nAttente de réception de la description et du prix...\n");
 
-	if(sendto(con_auct.sock, (void *) &code, sizeof(code), 0,
-		(sa_t *) & con_auct.addr, con_auct.addr_size) != sizeof(code))
-		PREXIT("sendto ");
+	char * str;
+	const int ssz = prot_recv_str(con_auct.sock, &str, & con_auct.addr);
+	if(ssz == -1)
+	{
+		conec_close(&con_auct);
+		return -1;
+	}
 
-	printf("OK.\nRéception de la réponse... "); fflush(stdout);
+	char biddesc[ssz];
+	float bidpric;
+	strcpy(biddesc, str);
 
-	conec_t temp;
-	if(recvfrom(con_auct.sock, (void *) &code, sizeof(code), 0,
-		(sa_t *) & temp.addr, & temp.addr_size) == -1)
-		PREXIT("recvfrom ");
-*/
-	if(code != PROT_REQ_OK)
-		printf("Connexion refusée.\n");
-	else
-		printf("Connexion acceptée.\n");
+	printf("Reçu la description : '%s'.\n", biddesc);
+
+	if(prot_recv_flt(con_auct.sock, &bidpric, & con_auct.addr) == -1)
+	{
+		conec_close(&con_auct);
+		return -1;
+	}
+
+	printf("Reçu le prix de départ : %f.\nContinuer ? ", bidpric);
+
+	char c;
+	scanf("%c", &c);
 
 	conec_close(&con_auct);
 

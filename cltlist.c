@@ -52,8 +52,10 @@ int cltlist_sendtoall(int sock, const void * data, cltlist_t * clients,
 		PWEXIT("[cltlist_sendtoall_str] : Null parameter.");
 
 	int i; for(i = 0; i < clients->size; i++)
+	{
 		if(usend(sock, data, &clients->addrs[i]) == -1)
 			return -1;
+	}
 
 	return 0;
 }

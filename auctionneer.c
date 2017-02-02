@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
 				if(code == PROT_REQ_CON)
 				{
 					code = PROT_REQ_RFS;
-					if(sendto(con_home.sock, (void *), &code, sizeof(code, 0, (sa_t *) &addr, sz) == -1)
+					if(sendto(con_home.sock, (void *) &code, sizeof(code), 0, (sa_t *) &addr, sz) == -1)
 						PREXIT("sendto ");
 				}
 

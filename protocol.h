@@ -15,6 +15,7 @@
 
 typedef uint16_t pcode_t;
 typedef uint32_t puint_t;
+typedef int32_t pint_t;
 
 typedef struct sockaddr_in sin_t;
 typedef struct sockaddr sa_t;

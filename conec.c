@@ -150,7 +150,7 @@ int conec_udp_connect(conec_t * conec)
 			PWEXIT("[conec_udp_connect] sendto : Protocol value not fully sent.");
 	}
 
-	if(recvfrom(con_auct.sock, (void *) &code, sizeof(code), 0, (sa_t *) addr, adsz) == -1)
+	if(recvfrom(conec->sock, (void *) &code, sizeof(code), 0, (sa_t *) addr, adsz) == -1)
 		PREXIT("recvfrom ");
 
 	if(code != PROT_REQ_OK)
