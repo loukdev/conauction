@@ -7,36 +7,31 @@ int main(int argc, char * argv[])
 	if(argc < 3)
 		PWEXIT("Usage: <prog> <server> <port>.");
 
-	printf("Création socket.\n");
+	printf("Initialisation de la connexion... "); fflush(stdout);
 
 	conec_t con_auct;
-	if(conec_init(&con_auct, SOCK_DGRAM) == -1)
+	if(conec_init_host(&con_auct, SOCK_DGRAM, argv[1], atoi(argv[2])) == -1)
 		return -1;
 
-	struct hostent * host;
-	if(!(host = gethostbyname(argv[1])))
-		{herror("gethostbyname "); return -1;}
+	printf("Ok\nEnvoi de la requête de connexion... "); fflush(stdout);
 
-	sin_t * addr = & con_auct.addr;
-	addr->sin_port = htons(atoi(argv[2]));
-	memcpy(& addr->sin_addr, host->h_addr, host->h_length);
+	if(conec_udp_connect(&con_auct) == -1)
+		return -1;
 
-	printf("Envoi de la requête de connexion... "); fflush(stdout);
-
-	prot_t code = PROT_REQ_CON;
+/*
+	pcode_t code = PROT_REQ_CON;
 
 	if(sendto(con_auct.sock, (void *) &code, sizeof(code), 0,
-		(sin_t *) & con_auct.addr, con_auct.addr_size) != sizeof(code))
+		(sa_t *) & con_auct.addr, con_auct.addr_size) != sizeof(code))
 		PREXIT("sendto ");
 
-	printf("OK.\n"
-		   "Réception de la réponse... "); fflush(stdout);
+	printf("OK.\nRéception de la réponse... "); fflush(stdout);
 
 	conec_t temp;
 	if(recvfrom(con_auct.sock, (void *) &code, sizeof(code), 0,
-		(sin_t *) & temp.addr, & temp.addr_size) == -1)
+		(sa_t *) & temp.addr, & temp.addr_size) == -1)
 		PREXIT("recvfrom ");
-
+*/
 	if(code != PROT_REQ_OK)
 		printf("Connexion refusée.\n");
 	else

@@ -1,5 +1,16 @@
 #include "protocol.h"
-#include "err.h"
+
+char * strbin(unsigned long int i)
+{
+    static char buffer [1+sizeof (unsigned long int)*8] = { 0 };
+    char * p = buffer-1 + sizeof (unsigned long int)*8;
+    do {
+		* --p = '0' + (i & 1);
+		i >>= 1;
+	} while (i);
+    return p;
+}
+
 
 int prot_send_str(int sock, const void * data, const sin_t * addr)
 {

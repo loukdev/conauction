@@ -15,6 +15,7 @@ do {\
 	return -1;\
 } while(0)
 
-#define PWEXIT(str) do { fprintf(stderr, "Warning ! %s\n", (str)); return 1; } while(0)
+#define PWEXIT2(str, ret) do { fprintf(stderr, "Warning ! %s\n", (str)); return ret; } while(0)
+#define PWEXIT(str) PWEXIT2(str, 1)
 
 #endif

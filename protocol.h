@@ -11,6 +11,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+#include "err.h"
+
 typedef uint16_t pcode_t;
 typedef uint32_t puint_t;
 
@@ -39,6 +41,8 @@ typedef struct sockaddr sa_t;
 
 #define PROT_BID_PRC	(PROT_BID | PROT_PRC)
 #define PROT_BID_DSC	(PROT_BID | PROT_DSC)
+
+char * strbin(unsigned long int);
 
 int	prot_send_str(int, const void *, const sin_t *);
 int	prot_send_flt(int, const void *, const sin_t *);

@@ -12,6 +12,7 @@ typedef struct {
 } conec_t;
 
 int		conec_init(conec_t *, int type);
+int		conec_init_host(conec_t *, int, const char *, int);
 void	conec_close(conec_t *);
 
 int		conec_bind(conec_t *, short port);
@@ -20,8 +21,6 @@ int		conec_udp_accept(conec_t *, struct sockaddr_in *);
 
 int		conec_sendto_str(conec_t *, uint8_t * data);
 int		conec_sendto_u32(conec_t *, uint8_t * data);
-
-char * strbin(unsigned long int i);
 
 #endif
 

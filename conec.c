@@ -1,29 +1,45 @@
 #include "conec.h"
 
-char * strbin(unsigned long int i)
-{
-    static char buffer [1+sizeof (unsigned long int)*8] = { 0 };
-    char *p=buffer-1+sizeof (unsigned long int)*8;
-    do { *--p = '0' + (i & 1); i >>= 1; } while (i);
-    return p;
-}
-
 
 int conec_init(conec_t * conec, int type)
 {
 	if(!conec)
-		PWEXIT("[conec_init] : A parameter is null.");
+		PWEXIT("[conec_init] : Null parameter.");
 
 	// Création de la socket :
 	if((conec->sock = socket(AF_INET, type, 0)) == -1)
 		PREXIT("[conec_init] socket ");
 
-	struct sockaddr_in * addr = & conec->addr;
+	sin_t * addr = & conec->addr;
 
 	// Initialisation par défaut de l'adresse et de sa taille :
 	conec->addr_size = sizeof(*addr);
 	addr->sin_family = AF_INET;
 	addr->sin_port = 0;
+
+	return 0;
+}
+
+int conec_init_host(conec_t * conec, int type, const char * hname, int port)
+{
+	if(!conec || !hname)
+		PWEXIT("[conec_init_host] : Null parameter.");
+
+	if((conec->sock = socket(AF_INET, type, 0)) == -1)
+		PREXIT("[conec_init_host] socket ");
+
+	struct hostent * host = gethostbyname(hname);
+	if(!host)
+	{
+		herror("[conec_init_host] gethostbyname ");
+		return -1;
+	}
+
+	sin_t * addr = & conec->addr;
+	conec->addr_size = sizeof(*addr);
+	addr->sin_family = AF_INET;
+	addr->sin_port = htons(port);
+	memcpy(&addr->sin_addr, host->h_addr, host->h_length);
 
 	return 0;
 }
@@ -47,12 +63,12 @@ int conec_bind(conec_t * conec, short port)
 		PWEXIT("[conec_bind] : A parameter is null.");
 
 	// Préparation de l'adresse :
-	struct sockaddr_in * addr = & conec->addr;
+	sin_t * addr = & conec->addr;
 	addr->sin_port = htons(port);
 	addr->sin_addr.s_addr = htonl(INADDR_ANY);
 
 	// Liage de la socket à l'adresse voulue :
-	if(bind(conec->sock, (struct sockaddr *) addr, conec->addr_size) == -1)
+	if(bind(conec->sock, (sa_t *) addr, conec->addr_size) == -1)
 		PREXIT("[conec_bind] bind ");
 
 	return 0;
@@ -67,7 +83,7 @@ int conec_accept(conec_t * conec, conec_t * accepted)
 	accepted->addr.sin_family = AF_INET;
 	accepted->addr_size = sizeof(accepted->addr);
 	// Acceuil d'un client :
-	int s = accept(conec->sock, (struct sockaddr *) & accepted->addr, & accepted->addr_size);
+	int s = accept(conec->sock, (sa_t *) & accepted->addr, & accepted->addr_size);
 	if(s == -1)
 		PREXIT("[conec_accept] accept ");
 
@@ -77,7 +93,7 @@ int conec_accept(conec_t * conec, conec_t * accepted)
 	return 0;
 }
 
-int conec_udp_accept(conec_t * conec, struct sockaddr_in * addr)
+int conec_udp_accept(conec_t * conec, sin_t * addr)
 {
 	if(!conec || !addr)
 		PWEXIT("[conec_udp_accept] : A parameter is null.");
@@ -89,7 +105,7 @@ int conec_udp_accept(conec_t * conec, struct sockaddr_in * addr)
 	pcode_t code;
 
 	// Réception du code d'opération :
-	if(recvfrom(conec->sock, (void *) &code, sizeof(code), 0, (struct sockaddr *) addr, &size) == -1)
+	if(recvfrom(conec->sock, (void *) &code, sizeof(code), 0, (sa_t *) addr, &size) == -1)
 		PREXIT("[conec_udp_accept] recvfrom ");
 
 	// Si ce n'est pas une requête de connexion :
@@ -102,7 +118,7 @@ int conec_udp_accept(conec_t * conec, struct sockaddr_in * addr)
 		code = PROT_REQ_OK;
 
 	// Envoi de la réponse :
-	int r = sendto(conec->sock, (void *) &code, sizeof(code), 0, (const struct sockaddr *) addr, size);
+	int r = sendto(conec->sock, (void *) &code, sizeof(code), 0, (const sa_t *) addr, size);
 
 	// Si la réponse n'a pas été entièrement envoyée :
 	if(r != sizeof(code))
@@ -111,6 +127,37 @@ int conec_udp_accept(conec_t * conec, struct sockaddr_in * addr)
 			PREXIT("[conec_udp_accept] sendto ");
 
 		PWEXIT("[conec_udp_accept] : Wrong size of sent code.");
+	}
+
+	return 0;
+}
+
+int conec_udp_connect(conec_t * conec)
+{
+	if(!conec)
+		PWEXIT("[conec_udp_connect] : Null parameter.");
+
+	pcode_t code = PROT_REQ_CON;
+	sin_t * addr = &conec->addr;
+	socklen_t * adsz = &conec->addr_size;
+
+	int r = sendto(conec->sock, (void *) &code, sizeof(code), 0, (sa_t *) addr, *adsz);
+	if(r != sizeof(code))
+	{
+		if(r == -1)
+			PREXIT("[conec_udp_connect] sendto ");
+		else
+			PWEXIT("[conec_udp_connect] sendto : Protocol value not fully sent.");
+	}
+
+	if(recvfrom(con_auct.sock, (void *) &code, sizeof(code), 0, (sa_t *) addr, adsz) == -1)
+		PREXIT("recvfrom ");
+
+	if(code != PROT_REQ_OK)
+	{
+		if(code & PROT_RFS)
+			PWEXIT2("[conec_udp_connect] : Connection refused by server.", -1);
+		PWEXIT("[conec_udp_connect] : Unexpected protocol value.");
 	}
 
 	return 0;

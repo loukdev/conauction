@@ -113,7 +113,7 @@ int main(int argc, char * argv[])
 					{printf("Etape : enchères.\n"); said = 1;}
 
 				// Réception d'une offre :
-/*
+
 				pcode_t code;
 				struct sockaddr_in addr; socklen_t sz;
 				if(recvfrom(con_home.sock, (void *) &code, sizeof(code), 0, (sa_t *) &addr, &sz) == -1)
@@ -125,7 +125,7 @@ int main(int argc, char * argv[])
 					if(sendto(con_home.sock, (void *), &code, sizeof(code, 0, (sa_t *) &addr, sz) == -1)
 						PREXIT("sendto ");
 				}
-*/
+
 				// Calcul de la meilleure offre et affichage :
 
 				// On demande au commissaire s'il faut continuer :
