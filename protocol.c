@@ -39,17 +39,6 @@ int prot_send_str(int sock, const void * data, const sin_t * addr)
 			PWEXIT("[prot_send_str] sendto : String not fully sent.");
 	}
 
-	pcode_t code; sin_t temp;
-	if(recvfrom(sock, (void *) &code, sizeof(code), 0, (sa_t *) &temp, &adsz) == -1)
-		PREXIT("[prot_send_str] read ");
-
-	if(code != PROT_ANS_OK)
-	{
-		if(code & PROT_ERR)
-			PWEXIT("[prot_send_str] : Error from client.");
-		PWEXIT("[prot_send_str] : Unexpected protocal value.");
-	}
-
 	return 0;
 }
 
@@ -69,17 +58,6 @@ int prot_send_flt(int sock, const void * data, const sin_t * addr)
 			PREXIT("[prot_send_str] sendto ");
 		else
 			PWEXIT("[prot_send_str] sendto : String not fully sent.");
-	}
-
-	pcode_t code;
-	if(read(sock, (void *) &code, sizeof(code)) == -1)
-		PREXIT("[prot_send_str] read ");
-
-	if(code != PROT_ANS_OK)
-	{
-		if(code & PROT_ERR)
-			PWEXIT("[prot_send_str] : Error from client.");
-		PWEXIT("[prot_send_str] : Unexpected protocal value.");
 	}
 
 	return 0;
@@ -111,15 +89,6 @@ int prot_recv_str(int sock, char ** data, sin_t * addr)
 
 	*data = str;
 
-	r = sendto(sock, (void *) &code, sz, 0, (sa_t *) addr, adsz);
-	if(r != sz)
-	{
-		if(r == -1)
-			PREXIT("[prot_recv_str] sendto (OK) ");
-		else
-			PWEXIT("[prot_recv_str] sendto : Protocol value not fully sent.");
-	}
-
 	return ssz;
 }
 
@@ -137,15 +106,6 @@ int prot_recv_flt(int sock, float * data, sin_t * addr)
 
 	pcode_t code = PROT_ANS_OK;
 	fsz = sizeof(code);
-
-	r = sendto(sock, (void *) &code, fsz, 0, (sa_t *) addr, adsz);
-	if(r != fsz)
-	{
-		if(r == -1)
-			PREXIT("[prot_recv_flt] sendto (OK) ");
-		else
-			PWEXIT("[prot_recv_flt] sendto : Protocol value not fully sent.");
-	}
 
 	return 0;
 }
