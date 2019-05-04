@@ -84,9 +84,6 @@ int prot_recv_str(int sock, char ** data, sin_t * addr)
 	if(r == -1)
 		PREXIT("[prot_recv_str) recvfrom (string) ");
 
-	pcode_t code = PROT_ANS_OK;
-	int sz = sizeof(code);
-
 	*data = str;
 
 	return ssz;
@@ -103,9 +100,6 @@ int prot_recv_flt(int sock, float * data, sin_t * addr)
 	int r = recvfrom(sock, (void *) data, fsz, 0, (sa_t *) addr, &adsz);
 	if(r == -1)
 		PREXIT("[prot_recv_flt] recvfrom ");
-
-	pcode_t code = PROT_ANS_OK;
-	fsz = sizeof(code);
 
 	return 0;
 }
