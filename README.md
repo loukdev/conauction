@@ -2,17 +2,17 @@
 
 ## conauction
 This is a Licence Informatics 3rd year project developped in C language, using POSIX sockets.
-The program simulates auctions, devided into two parts :
+The program simulates auctions, and is devided in two parts :
 - The auctionneer : there is only one. He commands the conauction server.
 - The outbidder : there are several and one of them win the auction. Each one is on a conauction client.
 
-Because it uses network sockets, the auctionner and the outbidders can be - and should be - on different computers, whenever they are in the world. In this obvious condition : being on the same network (same local network or connected on the internet).
+Because it uses network sockets, the auctionner and the outbidders can be - and should be - on different computers, whenever they are in the world. In this obvious condition : being on the same network (same local network or connected to the internet).
 
 For more details, look at http://lab-sticc.univ-brest.fr/~leparc/Etud/Licence/Reseau/Serie2UDP/TP_UDP.pdf (in french).
 
 ## What is that name ?
 This program simulates auction in console - this is not a GUI - and uses network with POSIX sockets.
-conauction is a contraction of two words : console and auction. By the way, it does a pun with "connection".
+conauction is a contraction of two words : console and auction, making a pun with "connection".
 
 # [FR]
 
@@ -27,5 +27,5 @@ Du fait que le programme utilise les sockets réseaux, le commissaire-priseur et
 Pour plus de détails, il est possible de jeter un oeil ici : http://lab-sticc.univ-brest.fr/~leparc/Etud/Licence/Reseau/Serie2UDP/TP_UDP.pdf (en français).
 
 ## Quel est ce nom ?
-Ce programme simule une vente aux enchères (en anglais : auction) sur console (en anglais : ...console) - ce n'est pas une interface graphique fenêtrée.
+Ce programme simule une vente aux enchères (en anglais : auction) sur console (en anglais : console) - ce n'est pas une interface graphique fenêtrée.  
 Le nom est une contraction des deux mots "auction" et "console". Ce qui fait un jeu de mot avec "connection" (avec une petite pirouette de prononciation) - connexion en français.
